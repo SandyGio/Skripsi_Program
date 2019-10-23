@@ -5,6 +5,7 @@ require('dotenv').config();
 var indexRouter = require('./routes/index');
 var authorize = require('./routes/authorize');
 var hourly = require('./routes/hourly');
+var slackAuthorize = require('./routes/slackAuthorize');
 
 var app = express();
 
@@ -19,6 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/authorize', authorize);
 app.use('/hourly', hourly);
+app.use('/slackAuthorize', slackAuthorize);
 
 // error handler
 app.use(function(err, req, res, next) {

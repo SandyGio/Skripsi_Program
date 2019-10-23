@@ -17,7 +17,11 @@ router.get('/', async function(req, res, next) {
   });
   console.log(dataUser);
   // let student = JSON.parse(rawdata);
-  res.render('authorize_success');
+  let parms = { title: 'Slack Login', active: { home: true } };
+
+  parms.signInUrlSlack = authHelper.getAuthUrlSlack();
+  console.log(parms.signInUrlSlack);
+  res.render('authorize_success', parms);
 
 });
 

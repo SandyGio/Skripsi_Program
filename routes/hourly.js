@@ -4,6 +4,13 @@ var fs =require('fs');
 var graph = require('@microsoft/microsoft-graph-client');
 require('isomorphic-fetch');
 
+//Disini harus ada yang meminta access token milik microsoft menggunakan refresh token
+//Disini juga harus ada yang mengambil data ke outlook calendar
+//Lalu disini juga yang melakukan pengecekan waktu sekarang dengan jadwal yang didapat dari outlook calendar
+//Lalu disini juga harus ada yang mengubah status ke slack sesuai dengan jadwal yang didapatkan di outlook calendar.
+//Melakukan riset apakah token di slack bersifat permanen tiap user atau tidak
+//Jika token di slack tidak permanen, maka lakukan meminta ulang token jika sudah expired.
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   fs.readFile(__dirname+'/../accessToken/accessToken.json', async (err, data)=>{
@@ -28,7 +35,7 @@ router.get('/', function(req, res, next) {
       console.log(client);
 
       try {
-      // Get the 10 newest messages from inbox
+      // Get event from calendar
       const result = await client
       .api(`/me/events`)
       .select('subject,start,end')
