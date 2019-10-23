@@ -1,3 +1,12 @@
+const { Client } = require('pg');
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true,
+});
+
+client.connect();
+
 const credentials = {
   client: {
     id: process.env.APP_ID,
@@ -25,6 +34,7 @@ const oauth2 = require('simple-oauth2').create(credentials);
 const oauth2Slack = require('simple-oauth2').create(credentialsSlack);
 const jwt = require('jsonwebtoken');
 var fs = require('fs');
+const databaseValue={};
 
 
 //Microsoft Auth Helper
@@ -46,6 +56,12 @@ async function getTokenFromCode(auth_code) {
   const token = oauth2.accessToken.create(result);
   const user = jwt.decode(token.token.id_token);
   token.token.userData=user;
+  //token dari sini menampung Microsoft username, accessToken, refreshToken, dan expires masing2.
+  databaseValue.microsoft_username=token.token.userData.preferred_username;
+  databaseValue.microsoft_access_token_expires=token.token.expires_in;
+  databaseValue.microsoft_access_token=token.token.access_token;
+  databaseValue.microsoft_refresh_token=token.token.refresh_token;
+  console.log(databaseValue);
 
   //This part will be replace with insert data to database.
   fs.writeFile(__dirname+"/../accessToken/accessToken.json", JSON.stringify(token.token), function(err){
@@ -81,6 +97,47 @@ async function getTokenFromCodeSlack(auth_code) {
   });
 
   const token = oauth2Slack.accessToken.create(result);
+  databaseValue.slack_access_token=token.token.access_token;
+  console.log(databaseValue);
+
+  client.query('SELECT * FROM public."Credentials";', (err, res) => {
+    const arrResult=res.rows;
+    var valueForInsert=[databaseValue.microsoft_username, databaseValue.microsoft_refresh_token, databaseValue.microsoft_access_token_expires, databaseValue.microsoft_access_token, databaseValue.slack_access_token];
+    var updated=0;
+    var queryText='';
+
+    arrResult.forEach(row =>{
+      console.log("Row ", row);
+      if(row.microsoft_username==databaseValue.microsoft_username){
+        queryText='UPDATE public."Credentials" SET microsoft_refresh_token=$2, microsoft_access_token_expires=$3, microsoft_access_token=$4, slack_access_token=$5 WHERE microsoft_username=$1 RETURNING *';
+
+        client.query(queryText, valueForInsert, (err, res) => {
+          console.log(err);
+          console.log("Update Res", res);
+          if (err) {
+            console.log(err.stack)
+          } else {
+            console.log(res.rows)
+          }
+        });
+        updated=1;
+      }
+    })
+
+    if (updated!=1) {
+      queryText='INSERT INTO public."Credentials" (microsoft_username, microsoft_refresh_token, microsoft_access_token_expires, microsoft_access_token, slack_access_token) VALUES ($1, $2, $3, $4, $5)';
+
+      client.query(queryText, valueForInsert, (err, res) => {
+        console.log("Insert Res", res);
+        if (err) {
+          console.log(err.stack)
+        } else {
+          console.log(res.rows[0])
+        }
+      });
+    }
+  });
+
   return token.token.access_token;
 }
 
