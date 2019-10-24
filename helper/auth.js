@@ -47,11 +47,13 @@ function getAuthUrl() {
 }
 
 async function getTokenFromCode(auth_code) {
+  console.log(auth_code);
   let result = await oauth2.authorizationCode.getToken({
     code: auth_code,
     redirect_uri: process.env.REDIRECT_URI,
     scope: process.env.APP_SCOPES
   });
+  console.log("Result", result);
 
   const token = oauth2.accessToken.create(result);
   const user = jwt.decode(token.token.id_token);
@@ -61,16 +63,17 @@ async function getTokenFromCode(auth_code) {
   databaseValue.microsoft_access_token_expires=token.token.expires_in;
   databaseValue.microsoft_access_token=token.token.access_token;
   databaseValue.microsoft_refresh_token=token.token.refresh_token;
-  console.log(databaseValue);
+  databaseValue.login_timestamp=new Date().getTime();
 
   //This part will be replace with insert data to database.
-  fs.writeFile(__dirname+"/../accessToken/accessToken.json", JSON.stringify(token.token), function(err){
-    if (err) {
-      return console.log(err);
-    }
-    console.log("The file has been save");
-  })
+  // fs.writeFile(__dirname+"/../accessToken/accessToken.json", JSON.stringify(token.token), function(err){
+  //   if (err) {
+  //     return console.log(err);
+  //   }
+  //   console.log("The file has been save");
+  // })
 
+  console.log(token);
   return token.token.access_token;
 }
 
@@ -83,7 +86,7 @@ function getAuthUrlSlack() {
     redirect_uri: process.env.SLACK_REDIRECT_URI,
     scope: process.env.SLACK_APP_SCOPES
   });
-  console.log("return val", returnVal);
+  // console.log("return val", returnVal);
   return returnVal;
 }
 
@@ -98,22 +101,22 @@ async function getTokenFromCodeSlack(auth_code) {
 
   const token = oauth2Slack.accessToken.create(result);
   databaseValue.slack_access_token=token.token.access_token;
-  console.log(databaseValue);
+  // console.log(databaseValue);
 
   client.query('SELECT * FROM public."Credentials";', (err, res) => {
     const arrResult=res.rows;
-    var valueForInsert=[databaseValue.microsoft_username, databaseValue.microsoft_refresh_token, databaseValue.microsoft_access_token_expires, databaseValue.microsoft_access_token, databaseValue.slack_access_token];
+    var valueForInsert=[databaseValue.microsoft_username, databaseValue.microsoft_refresh_token, databaseValue.microsoft_access_token_expires, databaseValue.microsoft_access_token, databaseValue.slack_access_token, databaseValue.login_timestamp];
     var updated=0;
     var queryText='';
 
     arrResult.forEach(row =>{
-      console.log("Row ", row);
+      // console.log("Row ", row);
       if(row.microsoft_username==databaseValue.microsoft_username){
-        queryText='UPDATE public."Credentials" SET microsoft_refresh_token=$2, microsoft_access_token_expires=$3, microsoft_access_token=$4, slack_access_token=$5 WHERE microsoft_username=$1 RETURNING *';
+        queryText='UPDATE public."Credentials" SET microsoft_refresh_token=$2, microsoft_access_token_expires=$3, microsoft_access_token=$4, slack_access_token=$5, login_timestamp=$6 WHERE microsoft_username=$1 RETURNING *';
 
         client.query(queryText, valueForInsert, (err, res) => {
-          console.log(err);
-          console.log("Update Res", res);
+          // console.log(err);
+          // console.log("Update Res", res);
           if (err) {
             console.log(err.stack)
           } else {
@@ -125,10 +128,10 @@ async function getTokenFromCodeSlack(auth_code) {
     })
 
     if (updated!=1) {
-      queryText='INSERT INTO public."Credentials" (microsoft_username, microsoft_refresh_token, microsoft_access_token_expires, microsoft_access_token, slack_access_token) VALUES ($1, $2, $3, $4, $5)';
+      queryText='INSERT INTO public."Credentials" (microsoft_username, microsoft_refresh_token, microsoft_access_token_expires, microsoft_access_token, slack_access_token, login_timestamp) VALUES ($1, $2, $3, $4, $5, $6)';
 
       client.query(queryText, valueForInsert, (err, res) => {
-        console.log("Insert Res", res);
+        // console.log("Insert Res", res);
         if (err) {
           console.log(err.stack)
         } else {

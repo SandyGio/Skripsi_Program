@@ -15,12 +15,12 @@ router.get('/', async function(req, res, next) {
     let student = JSON.parse(data);
     dataUser=student
   });
-  console.log(dataUser);
+  // console.log(dataUser);
   // let student = JSON.parse(rawdata);
   let parms = { title: 'Slack Login', active: { home: true } };
 
   parms.signInUrlSlack = authHelper.getAuthUrlSlack();
-  console.log(parms.signInUrlSlack);
+  // console.log(parms.signInUrlSlack);
   res.render('authorize_success', parms);
 
 });

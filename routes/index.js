@@ -8,7 +8,7 @@ router.get('/', function(req, res, next) {
 
   parms.signInUrl = authHelper.getAuthUrl();
   parms.debug = parms.signInUrl;
-  console.log(parms.signInUrl);
+  // console.log(parms.signInUrl);
   res.render('index', parms);
 });
 
