@@ -27,6 +27,9 @@ const client = new Client({
   ssl: true,
 });
 
+const timestampNow=new Date();
+console.log(timestampNow);
+
 client.connect();
 
 //Lalu disini juga yang melakukan pengecekan waktu sekarang dengan jadwal yang didapat dari outlook calendar
@@ -40,21 +43,23 @@ router.get('/', async function(req, res, next) {
 
     //Melakukan Looping untuk mengiterasi setiap data yang dikembalikan dari database
     //Ganti index ke 0 [0] dengan hsil iterasi dari hasil dari db
-    if(res.rows[0].microsoft_access_token){
-      var expiration = parseInt(res.rows[0].login_timestamp)+res.rows[0].microsoft_access_token_expires;
-      console.log("Expiration", new Date(expiration));
-      var now=new Date().getTime();
-      console.log("Now", new Date(now));
-      if (expiration<now) {
-        console.log("Minta token baru pake refreshToken");
-        var newAccessToken=useRefreshToken(res.rows[0].microsoft_refresh_token)
-        console.log(newAccessToken);
-        var events=getEvent(newAccessToken, res.rows[0].slack_access_token);
-        console.log(events);
-      }
-      else {
-        console.log("Pakai token lama karena belum expired");
-        var events=getEvent(res.rows[0].microsoft_access_token);
+    for (var i = 0; i < res.rows.length; i++) {
+      if(res.rows[i].microsoft_access_token){
+        var expiration = parseInt(res.rows[i].login_timestamp)+res.rows[i].microsoft_access_token_expires;
+        console.log("Expiration", new Date(expiration));
+        var now=new Date().getTime();
+        console.log("Now", new Date(now));
+        if (expiration<now) {
+          console.log("Minta token baru pake refreshToken");
+          var newAccessToken=useRefreshToken(res.rows[i].microsoft_refresh_token)
+          console.log(newAccessToken);
+          var events=getEvent(newAccessToken, res.rows[i].slack_access_token);
+          console.log(events);
+        }
+        else {
+          console.log("Pakai token lama karena belum expired");
+          var events=getEvent(res.rows[i].microsoft_access_token);
+        }
       }
     }
   });
@@ -83,10 +88,30 @@ async function getEvent(accessToken, slack_access_token){
     .get();
 
     console.log(result.value);
-
-    //Memanggil function ganti status.
-    //Harus melakukan filter waktu dulu disini.
-    changeStatusSlack(slack_access_token);
+    for (var i = 0; i < result.value.length; i++) {
+      var start = result.value[i].start.dateTime;
+      var startDate = new Date(start);
+      startDate.setHours(startDate.getHours() + 7);
+      var end = result.value[i].end.dateTime;
+      var endDate = new Date(end);
+      endDate.setHours(endDate.getHours() + 7);
+      console.log(start,"sandy goblog", startDate);
+      console.log(typeof end, new Date(end));
+      console.log("1 |start", new Date(start).getTimezoneOffset(), "|now|", timestampNow.getTimezoneOffset(), "|end|", new Date(end));
+      console.log("2", timestampNow >= new Date(start));
+      console.log("3", timestampNow <= end);
+      console.log("4 res2", result.value[i].end.dateTime);
+      console.log(endDate.getTime());
+      if (timestampNow>=startDate&&timestampNow<=endDate) {
+        console.log("Harusnya ganti status disini");
+        console.log(timestampNow.getTime(), startDate.getTime(), endDate.getTime());
+        //Memanggil fungsi untuk merubah status.
+        changeStatusSlack(slack_access_token, endDate.getTime());
+      }
+      else {
+        console.log("Tidak ada event yang bersamaan dengan waktu skrng");
+      }
+    }
 
   }catch (err) {
     console.log("error", err);
@@ -127,14 +152,15 @@ async function useRefreshToken(auth_code) {
 
 
 // Fungsi ini berguna untuk mengganti status di slack
-async function changeStatusSlack(slack_access_token){
+async function changeStatusSlack(slack_access_token, endDate){
+  console.log(endDate/1000);
   const web = new WebClient(slack_access_token);
 
   const result = await web.users.profile.set({
     "profile":{
         "status_text": "In A Meeting",
-        "status_emoji": ":no_entry:"
-        // "status_expiration": 1532627506
+        "status_emoji": ":no_entry:",
+        "status_expiration":endDate/1000
       }
   });
 }
