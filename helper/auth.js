@@ -33,7 +33,6 @@ const credentialsSlack = {
 const oauth2 = require('simple-oauth2').create(credentials);
 const oauth2Slack = require('simple-oauth2').create(credentialsSlack);
 const jwt = require('jsonwebtoken');
-var fs = require('fs');
 const databaseValue={};
 
 
@@ -64,14 +63,6 @@ async function getTokenFromCode(auth_code) {
   databaseValue.microsoft_access_token=token.token.access_token;
   databaseValue.microsoft_refresh_token=token.token.refresh_token;
   databaseValue.login_timestamp=new Date().getTime();
-
-  //This part will be replace with insert data to database.
-  // fs.writeFile(__dirname+"/../accessToken/accessToken.json", JSON.stringify(token.token), function(err){
-  //   if (err) {
-  //     return console.log(err);
-  //   }
-  //   console.log("The file has been save");
-  // })
 
   console.log(token);
   return token.token.access_token;
