@@ -9,12 +9,12 @@ router.get('/', async function(req, res, next) {
   const code = req.query.code;
 
   token = await authHelper.getTokenFromCode(code);
-  let dataUser;
-  fs.readFile(__dirname+'/../accessToken/accessToken.json', (err, data)=>{
-    if (err) throw err;
-    let student = JSON.parse(data);
-    dataUser=student
-  });
+  // let dataUser;
+  // fs.readFile(__dirname+'/../accessToken/accessToken.json', (err, data)=>{
+  //   if (err) throw err;
+  //   let student = JSON.parse(data);
+  //   dataUser=student
+  // });
   // console.log(dataUser);
   // let student = JSON.parse(rawdata);
   let parms = { title: 'Slack Login', active: { home: true } };
