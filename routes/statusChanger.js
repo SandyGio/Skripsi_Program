@@ -95,7 +95,7 @@ async function getEvent(accessToken, slack_access_token){
     for (var i = 0; i < result.value.length; i++) {
       var start = result.value[i].start.dateTime;
       var startDate = new Date(start);
-      startDate.setHours(startDate.getHours() + 7);
+      // startDate.setHours(startDate.getHours() + 7);
       var end = result.value[i].end.dateTime;
       var endDate = new Date(end);
       // endDate.setHours(endDate.getHours() + 7);
