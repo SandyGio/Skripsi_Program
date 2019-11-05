@@ -44,8 +44,9 @@ console.log(timestampNow);
 router.get('/', async function(req, res, next) {
   console.log("MASUK KE FUNCTION ROUTE HANDLER INI");
   var rowsFromDB='';
-  console.log(client);
+  // console.log(client);
   client.query('SELECT * FROM public."Credentials";', (err, res) => {
+    console.log("MASUK SELECT LOOP");
     rowsFromDB=res.rows;
 
     //Melakukan Looping untuk mengiterasi setiap data yang dikembalikan dari database
