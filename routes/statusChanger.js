@@ -8,6 +8,7 @@ const { WebClient } = require('@slack/web-api');
 require('dotenv').config();
 require('isomorphic-fetch');
 // console.log(authHelper);
+console.log("ROUTE INI TELAH DIPANGGIL");
 
 const credentials = {
   client: {
@@ -41,6 +42,7 @@ console.log(timestampNow);
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
+  console.log("MASUK KE FUNCTION ROUTE HANDLER INI");
   var rowsFromDB='';
   client.query('SELECT * FROM public."Credentials";', (err, res) => {
     rowsFromDB=res.rows;
