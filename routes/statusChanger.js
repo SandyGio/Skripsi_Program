@@ -44,6 +44,7 @@ console.log(timestampNow);
 router.get('/', async function(req, res, next) {
   console.log("MASUK KE FUNCTION ROUTE HANDLER INI");
   var rowsFromDB='';
+  console.log(client);
   client.query('SELECT * FROM public."Credentials";', (err, res) => {
     rowsFromDB=res.rows;
 
