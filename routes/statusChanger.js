@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const { WebClient } = require('@slack/web-api');
 require('dotenv').config();
 require('isomorphic-fetch');
+// console.log(authHelper);
 
 const credentials = {
   client: {
@@ -21,16 +22,19 @@ const credentials = {
 };
 const oauth2 = require('simple-oauth2').create(credentials);
 const { Client } = require('pg');
+// console.log(Client);
+// console.log(process.env.DATABASE_URL);
 
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: true,
 });
+// console.log(client);
 
 const timestampNow=new Date();
 console.log(timestampNow);
 
-client.connect();
+// client.connect();
 
 //Lalu disini juga yang melakukan pengecekan waktu sekarang dengan jadwal yang didapat dari outlook calendar
 //Lalu disini juga harus ada yang mengubah status ke slack sesuai dengan jadwal yang didapatkan di outlook calendar.
@@ -94,7 +98,7 @@ async function getEvent(accessToken, slack_access_token){
       startDate.setHours(startDate.getHours() + 7);
       var end = result.value[i].end.dateTime;
       var endDate = new Date(end);
-      endDate.setHours(endDate.getHours() + 7);
+      // endDate.setHours(endDate.getHours() + 7);
       console.log(start,"sandy goblog", startDate);
       console.log(typeof end, new Date(end));
       console.log("1 |start", new Date(start).getTimezoneOffset(), "|now|", timestampNow.getTimezoneOffset(), "|end|", new Date(end));
