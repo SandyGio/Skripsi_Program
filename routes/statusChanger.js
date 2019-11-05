@@ -35,7 +35,7 @@ const client = new Client({
 const timestampNow=new Date();
 console.log(timestampNow);
 
-// client.connect();
+client.connect();
 
 //Lalu disini juga yang melakukan pengecekan waktu sekarang dengan jadwal yang didapat dari outlook calendar
 //Lalu disini juga harus ada yang mengubah status ke slack sesuai dengan jadwal yang didapatkan di outlook calendar.
