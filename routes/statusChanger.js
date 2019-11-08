@@ -31,6 +31,7 @@ const client = new Client({
   ssl: true,
 });
 // console.log(client);
+var timestampNow;
 
 client.connect();
 
@@ -40,7 +41,7 @@ client.connect();
 /* GET home page. */
 router.get('/', async function(req, res, next) {
   console.log("MASUK KE FUNCTION ROUTE HANDLER INI");
-  var timestampNow=new Date();
+  timestampNow=new Date();
   console.log(timestampNow);
   var rowsFromDB='';
   // console.log(client);
