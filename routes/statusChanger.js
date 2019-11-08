@@ -32,9 +32,6 @@ const client = new Client({
 });
 // console.log(client);
 
-var timestampNow=new Date();
-console.log(timestampNow);
-
 client.connect();
 
 //Lalu disini juga yang melakukan pengecekan waktu sekarang dengan jadwal yang didapat dari outlook calendar
@@ -43,6 +40,8 @@ client.connect();
 /* GET home page. */
 router.get('/', async function(req, res, next) {
   console.log("MASUK KE FUNCTION ROUTE HANDLER INI");
+  var timestampNow=new Date();
+  console.log(timestampNow);
   var rowsFromDB='';
   // console.log(client);
   client.query('SELECT * FROM public."Credentials";', (err, res) => {
