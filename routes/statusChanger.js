@@ -105,7 +105,7 @@ async function getEvent(accessToken, slack_access_token){
       // endDate.setHours(endDate.getHours() + 7);
       console.log(start,"sandy goblog", startDate);
       console.log(typeof end, new Date(end));
-      console.log("1 |start", new Date(start).getTimezoneOffset(), "|now|", timestampNow.getTimezoneOffset(), "|end|", new Date(end));
+      console.log("1 |start", new Date(start), "|now|", timestampNow, "|end|", new Date(end));
       console.log("2", timestampNow >= new Date(start));
       console.log("3", timestampNow <= end);
       console.log("4 res2", result.value[i].end.dateTime);
