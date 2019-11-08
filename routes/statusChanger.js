@@ -54,18 +54,18 @@ router.get('/', async function(req, res, next) {
     for (var i = 0; i < res.rows.length; i++) {
       if(res.rows[i].microsoft_access_token){
         var expiration = parseInt(res.rows[i].login_timestamp)+res.rows[i].microsoft_access_token_expires;
-        console.log("Expiration", new Date(expiration));
+        // console.log("Expiration", new Date(expiration));
         var now=new Date().getTime();
-        console.log("Now", new Date(now));
+        // console.log("Now", new Date(now));
         if (expiration<now) {
-          console.log("Minta token baru pake refreshToken");
+          // console.log("Minta token baru pake refreshToken");
           var newAccessToken=useRefreshToken(res.rows[i].microsoft_refresh_token)
-          console.log(newAccessToken);
+          // console.log(newAccessToken);
           var events=getEvent(newAccessToken, res.rows[i].slack_access_token);
-          console.log(events);
+          // console.log(events);
         }
         else {
-          console.log("Pakai token lama karena belum expired");
+          // console.log("Pakai token lama karena belum expired");
           var events=getEvent(res.rows[i].microsoft_access_token);
         }
       }
@@ -79,7 +79,7 @@ router.get('/', async function(req, res, next) {
 
 // Fungsi ini berguna untuk mengambil data event dari Outlook Calendar.
 async function getEvent(accessToken, slack_access_token){
-  console.log("accessToken", accessToken);
+  // console.log("accessToken", accessToken);
 
   const graphClient = graph.Client.init({
     authProvider:(done)=>{
@@ -103,13 +103,13 @@ async function getEvent(accessToken, slack_access_token){
       var end = result.value[i].end.dateTime;
       var endDate = new Date(end);
       // endDate.setHours(endDate.getHours() + 7);
-      console.log(start,"sandy goblog", startDate);
-      console.log(typeof end, new Date(end));
-      console.log("1 |start", new Date(start), "|now|", timestampNow, "|end|", new Date(end));
-      console.log("2", timestampNow >= new Date(start));
-      console.log("3", timestampNow <= end);
-      console.log("4 res2", result.value[i].end.dateTime);
-      console.log(endDate.getTime());
+      // console.log(start,"sandy goblog", startDate);
+      // console.log(typeof end, new Date(end));
+      // console.log("1 |start", new Date(start), "|now|", timestampNow, "|end|", new Date(end));
+      // console.log("2", timestampNow >= new Date(start));
+      // console.log("3", timestampNow <= end);
+      // console.log("4 res2", result.value[i].end.dateTime);
+      // console.log(endDate.getTime());
       if (timestampNow>=startDate&&timestampNow<=endDate) {
         console.log("Harusnya ganti status disini");
         console.log(timestampNow.getTime(), startDate.getTime(), endDate.getTime());
