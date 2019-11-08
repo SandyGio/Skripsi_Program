@@ -32,7 +32,7 @@ const client = new Client({
 });
 // console.log(client);
 
-const timestampNow=new Date();
+var timestampNow=new Date();
 console.log(timestampNow);
 
 client.connect();
