@@ -40,13 +40,13 @@ client.connect();
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
-  console.log("MASUK KE FUNCTION ROUTE HANDLER INI");
+  // console.log("MASUK KE FUNCTION ROUTE HANDLER INI");
   timestampNow=new Date();
-  console.log(timestampNow);
+  // console.log(timestampNow);
   var rowsFromDB='';
   // console.log(client);
   client.query('SELECT * FROM public."Credentials";', (err, res) => {
-    console.log("MASUK SELECT LOOP");
+    // console.log("MASUK SELECT LOOP");
     rowsFromDB=res.rows;
 
     //Melakukan Looping untuk mengiterasi setiap data yang dikembalikan dari database
@@ -95,7 +95,7 @@ async function getEvent(accessToken, slack_access_token){
     .orderby('start/dateTime DESC')
     .get();
 
-    console.log(result.value);
+    // console.log(result.value);
     for (var i = 0; i < result.value.length; i++) {
       var start = result.value[i].start.dateTime;
       var startDate = new Date(start);
@@ -103,7 +103,7 @@ async function getEvent(accessToken, slack_access_token){
       var end = result.value[i].end.dateTime;
       var endDate = new Date(end);
       // endDate.setHours(endDate.getHours() + 7);
-      // console.log(start,"sandy goblog", startDate);
+      // console.log(start,"|", startDate);
       // console.log(typeof end, new Date(end));
       // console.log("1 |start", new Date(start), "|now|", timestampNow, "|end|", new Date(end));
       // console.log("2", timestampNow >= new Date(start));
@@ -111,8 +111,8 @@ async function getEvent(accessToken, slack_access_token){
       // console.log("4 res2", result.value[i].end.dateTime);
       // console.log(endDate.getTime());
       if (timestampNow>=startDate&&timestampNow<=endDate) {
-        console.log("Harusnya ganti status disini");
-        console.log(timestampNow.getTime(), startDate.getTime(), endDate.getTime());
+        // console.log("Harusnya ganti status disini");
+        // console.log(timestampNow.getTime(), startDate.getTime(), endDate.getTime());
         //Memanggil fungsi untuk merubah status.
         changeStatusSlack(slack_access_token, endDate.getTime());
       }
@@ -148,7 +148,7 @@ async function useRefreshToken(auth_code) {
       if (err) {
         console.log(err.stack)
       } else {
-        console.log("SUKSES", res.rows)
+        // console.log("SUKSES", res.rows)
       }
     });
     return newToken.token.access_token;
